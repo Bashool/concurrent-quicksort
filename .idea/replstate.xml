@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ReplState" timestamp="1461452379969">{:repl-history {:ide [], :local [&quot;lein deps :tree&quot; &quot;lein run&quot; &quot;lein jar&quot; &quot;clojure-version&quot; &quot;run!&quot; &quot;concurrent-quicksort&quot; &quot;concurrent-quicksort.core.foo&quot;], :remote []}}</component>
+</project>
