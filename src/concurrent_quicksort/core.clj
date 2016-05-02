@@ -1,134 +1,173 @@
 (ns concurrent-quicksort.core)
-;;;http://stackoverflow.com/questions/12176832/quicksort-in-clojure
+;;;https://gist.github.com/noahlz/1592879
 
-
-(set! *unchecked-math* true)
-(set! *warn-on-reflection* true)
-
-(defn swap [^longs a ^long i ^long j]
-  (let [t (aget a i)]
-    (aset a i (aget a j))
-    (aset a j t)))
-
-(defn ^long apartition [^longs a ^long pivot ^long i ^long j]
-  (loop [i i j j]
-    (if (<= i j)
-      (let [v (aget a i)]
-        (if (< v pivot)
-          (recur (inc i) j)
-          (do
-            (when (< i j)
-              (aset a i (aget a j))
-              (aset a j v))
-            (recur i (dec j)))))
-      i)))
-
-(defn qsort
-  ([^longs a]
-   (qsort a 0 (long (alength a))))
-  ([^longs a ^long lo ^long hi]
-   (when
-     (< (inc lo) hi)
-     (let [pivot (aget a lo)
-           split (dec (apartition a pivot (inc lo) (dec hi)))]
-       (when (> split lo)
-         (swap a lo split))
-       (qsort a lo split)
-       (qsort a (inc split) hi)
-       ;;;(.start (Thread. (fn [] ))) (qsort a lo split)
-       ;;;(.start (Thread. (fn [] (qsort a (inc split) hi))))
-       ;;;(agent (qsort a lo split))
-       ;;;(agent (qsort a (inc split) hi))
-       ))
-   a))
-
-(defn ^longs rand-long-array []
-  (let [rnd (java.util.Random.)]
-    (long-array (repeatedly 100000 #(.nextLong rnd)))))
-
-(comment
-  (dotimes [_ 10]
-    (let [as (rand-long-array)]
-      (time
-        (dotimes [_ 1]
-          (qsort as)))))
-  )
-
-;;;read a file of integers separated by a new line
-(defn read-dataset [fname]
-  (map read-string                                          ;;;Convert each string to long
-       (clojure.string/split-lines                          ;;;split string by line
-         (slurp fname))                                     ;;;read file
-       )
-  )
-
-(def unsorted (read-dataset "../../resources/numbers.dat"))
-
-(println (type unsorted))
-
-
-
-(def sorted (qsort (long-array unsorted)))
-
-(println (type sorted))
-
-(println (count sorted))
-
-(println (apply <= unsorted))
-
-(println (apply <= sorted))
-
-(dotimes [_ 10]
-  (time
-    (dotimes [_ 1]
-      (qsort (long-array unsorted)))))
-
-(println "finished")
-
-(defn sort-parts
-  "Lazy, tail-recursive, incremental quicksort. Works against and
-creates partitions based on the pivot, defined as 'work'."
-  [work]
+(defn sort-parts [work]
   (lazy-seq
-    (loop [[part & parts] work]
-      (if-let [[pivot & xs] (seq part)]
-        (do
-            (let [smaller? #(< % pivot)]
-              (recur (list*
-                       (filter smaller? xs)
-                       pivot
-                       (remove smaller? xs)
-                       parts))))
-        (when-let [[x & parts] parts]
+    (loop [[part & parts] work]                             ;; Pull apart work - note: work will be a list of lists.
+      (if-let [[pivot & xs] (seq part)]                     ;; This blows up unless work was a list of lists.
+        (let [smaller? #(< % pivot)]                        ;; define pivot comparison function.
+          (recur (list*
+                   (filter smaller? xs)                     ;; work all < pivot
+                   pivot                                    ;; work pivot itself
+                   (remove smaller? xs)                     ;; work all > pivot
+                   parts)))                                 ;; concat parts
+        (when-let [[x & parts] parts]                       ;; sort rest if more parts
           (cons x (sort-parts parts)))))))
 
-(defn qsort2 [xs]
-  (sort-parts (list xs)))
+(defn qsort [xs]
+  (sort-parts (list xs)))                                   ;; The (list) function ensures that we pass sort-parts a list of lists.
+
+
+;;;read a file of integers separated by a new line
+(defn read-dataset [fname nitems]
+  (partition nitems
+             (map read-string                               ;;;Convert each string to long
+                  (clojure.string/split-lines               ;;;split string by line
+                    (slurp fname))                          ;;;read file
+                  )))
+
+
+(defn merge-lists [left right]
+  (loop [head [] L left R right]
+    (if (empty? L) (concat head R)
+                   (if (empty? R) (concat head L)
+                                  (if (> (first L) (first R))
+                                    (recur (conj head (first R)) L (rest R))
+                                    (recur (conj head (first L)) (rest L) R))))))
+
+(defn merge-sort [list]
+  (if (< (count list) 2) list
+                         (apply merge-lists
+                                (map merge-sort
+                                     (split-at (/ (count list) 2) list)))))
+
+
+
+;;;;; First test that the final result is actually sorted
+;(def testing ( reduce merge-lists
+;                      (pmap qsort (read-dataset "../../resources/numbers.dat" 31250))))
+;
+;;;; Print "true" if sorted, else print "false"
+;(println (apply <= testing))
+
 
 (require '[com.climate.claypoole :as cp])
 
-(defn sort-parts-future [work pool]
-  (lazy-seq
-    (loop [[part & parts] work]                             ;;;Pull apart work
-      (if-let [[pivot & xs] (seq part)]
-        (let [smaller? #(< % pivot)]                        ;;;Define pivot comparison fn
-          (recur (list*
-                   (filter smaller? xs)                     ;;;Work all smaller than pivot
-                   pivot                                    ;;;Work the pivot itself
-                   (remove smaller? xs)                     ;;;Work all greater than pivot
-                   parts)))                                 ;;;Concat parts
-        (when-let [[x & parts] parts]
-          (cons x @(cp/future pool (sort-parts-future parts pool))))))))                  ;;;Sort the rest if more parts
-
-(defn qsort-future [xs]
-  ;;;(println (type xs))
-  ;;;(println (list xs))
-  (def pool (cp/threadpool 50))
-  (sort-parts-future (list xs) pool))
+;(dotimes [_ 10]
+;  (let [unsorted (read-dataset "../../resources/numbers.dat" 31250)]
+;    (time
+;      (dotimes [_ 1]
+;        (reduce merge-lists
+;                (pmap qsort unsorted))))))
 
 
-(def sorted-future (qsort-future unsorted))
 
-(println (apply <= sorted-future))
+;(cp/with-shutdown! [pool (cp/threadpool 2)]
+;                   (let [unsorted (read-dataset "../../resources/numbers.dat" 31250)]
+;                     (dotimes [_ 10]
+;                       (time
+;                         (dotimes [_ 1]
+;                           (reduce merge-lists
+;                                   (cp/pmap pool qsort unsorted)))))))
 
-(time (qsort-future unsorted))
+;INPUT
+;fname = path to the file to read in
+;nitems = # of items in each partition
+;niters = # of times to run the sorting algorithm
+;OUTPUT
+;time it takes to sort the list with the given partitions
+;(defn serial-sort [fname nitems niters]
+;  (let [unsorted (read-dataset fname nitems)]
+;    (println (count unsorted) "partitions with" nitems "elements in each partition")
+;    ;(println unsorted)
+;    (dotimes [_ niters]
+;      (time
+;        (dotimes [_ 1]
+;          (reduce merge-lists
+;                  (map qsort unsorted)))))))
+
+;INPUT
+;fname = path to the file to read in
+;nitems = # of items in each partition
+;niters = # of times to run the sorting algorithm
+;nthreads = # of threads in the thread pool
+;OUTPUT
+;time it takes to sort the list with the given partitions, and size of the thread pool
+(defn concurrent-sort [fname nitems niters nthreads]
+  (let [unsorted (read-dataset fname nitems)]
+    (println (count unsorted) "partitions with" nitems "elements in each partition with a thread pool of" nthreads "threads")
+    ;(println unsorted)
+    (dotimes [_ niters]
+      (cp/with-shutdown! [pool (cp/threadpool nthreads)]
+                         (time
+                           (dotimes [_ 1]
+                             (reduce merge-lists
+                                     (cp/pmap pool qsort unsorted))))))))
+
+;INPUT
+;fname = path to the file to read in
+;nitems = # of items in each partition
+;niters = # of times to run the sorting algorithm
+;OUTPUT
+;time it takes to sort the list with the given partitions
+(defn serial-sort [fname nitems niters]
+  (let [unsorted (read-dataset fname nitems)]
+    (println (count unsorted) "partitions with" nitems "elements in each partition")
+    ;(println unsorted)
+    (dotimes [_ niters]
+      (time
+        (dotimes [_ 1]
+          (reduce merge-lists
+                  (cp/pmap :serial qsort unsorted)))))))
+
+;(println (cp/ncpus) "CPUS")
+
+(let [fname "../../resources/numbers.dat"]
+  ;(serial-sort fname 1000000 1)                             ;1 Partition
+  ;(serial-sort fname 500000 1)                              ;2 Partitions
+  ;(serial-sort fname 250000 1)                              ;4 Partitions
+  ;(serial-sort fname 125000 1)                              ;8 Partitions
+  ;(serial-sort fname 62500 1)                              ;16 Partitions
+  ;(serial-sort fname 31250 1)                              ;32 Partitions
+  ;(concurrent-sort fname 1000000 1 1)                       ;1 Thread, 1 Partition
+  ;(concurrent-sort fname 500000 1 1)                        ;1 Thread, 2 Partitions
+  ;(concurrent-sort fname 250000 1 1)                       ;1 Thread, 4 Partitions
+  ;(concurrent-sort fname 125000 1 1)                       ;1 Thread, 8 Partitions
+  ;(concurrent-sort fname 62500 1 1)                       ;1 Thread, 16 Partitions
+  ;(concurrent-sort fname 31250 1 1)                       ;1 Thread, 32 Partitions
+  ;(concurrent-sort fname 1000000 1 2)                       ;2 Threads, 1 Partition
+  ;(concurrent-sort fname 500000 1 2)                        ;2 Threads, 2 Partitions
+  ;(concurrent-sort fname 250000 1 2)                       ;2 Threads, 4 Partitions
+  ;(concurrent-sort fname 125000 1 2)                       ;2 Threads, 8 Partitions
+  ;(concurrent-sort fname 62500 1 2)                       ;2 Threads, 16 Partitions
+  ;(concurrent-sort fname 31250 1 2)                       ;2 Threads, 32 Partitions
+  ;(concurrent-sort fname 1000000 1 4)                       ;4 Threads, 1 Partitions
+  ;(concurrent-sort fname 500000 1 4)                        ;4 Threads, 2 Partitions
+  (concurrent-sort fname 250000 1 4)                       ;4 Threads, 4 Partitions
+  ;(concurrent-sort fname 125000 1 4)                       ;4 Threads, 8 Partitions
+  ;(concurrent-sort fname 62500 1 4)                       ;4 Threads, 16 Partitions
+  ;(concurrent-sort fname 31250 1 4)                       ;4 Threads, 32 Partitions
+  ;(concurrent-sort fname 1000000 1 8)                       ;8 Threads, 1 Partitions
+  ;(concurrent-sort fname 500000 1 8)                        ;8 Threads, 2 Partitions
+  ;(concurrent-sort fname 250000 1 8)                       ;8 Threads, 4 Partitions
+  ;(concurrent-sort fname 125000 1 8)                       ;8 Threads, 8 Partitions
+  ;(concurrent-sort fname 62500 1 8)                       ;8 Threads, 16 Partitions
+  ;(concurrent-sort fname 31250 1 8)                       ;8 Threads, 32 Partitions
+  ;(concurrent-sort fname 1000000 1 16)                       ;16 Threads, 1 Partitions
+  ;(concurrent-sort fname 500000 1 16)                        ;16 Threads, 2 Partitions
+  ;(concurrent-sort fname 250000 1 16)                       ;16 Threads, 4 Partitions
+  ;(concurrent-sort fname 125000 1 16)                       ;16 Threads, 8 Partitions
+  ;(concurrent-sort fname 62500 1 16)                       ;16 Threads, 16 Partitions
+  ;(concurrent-sort fname 31250 1 16)                       ;16 Threads, 32 Partitions
+  ;(concurrent-sort fname 1000000 1 32)                       ;32 Threads, 1 Partitions
+  ;(concurrent-sort fname 500000 1 32)                        ;32 Threads, 2 Partitions
+  ;(concurrent-sort fname 250000 1 32)                       ;32 Threads, 4 Partitions
+  ;(concurrent-sort fname 125000 1 32)                       ;32 Threads, 8 Partitions
+  ;(concurrent-sort fname 62500 1 32)                       ;32 Threads, 16 Partitions
+  ;(concurrent-sort fname 31250 1 32)                       ;32 Threads, 32 Partitions
+
+  )
+
+
+
+(println "finished")
