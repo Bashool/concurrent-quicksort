@@ -93,6 +93,23 @@
 ;nthreads = # of threads in the thread pool
 ;OUTPUT
 ;time it takes to sort the list with the given partitions, and size of the thread pool
+(defn pmap-sort [fname nitems niters]
+  (let [unsorted (read-dataset fname nitems)]
+    (println (count unsorted) "partitions with" nitems "elements in each partition")
+    ;(println unsorted)
+    (dotimes [_ niters]
+      (time
+        (dotimes [_ 1]
+          (reduce merge-lists
+                  (pmap qsort unsorted)))))))
+
+;INPUT
+;fname = path to the file to read in
+;nitems = # of items in each partition
+;niters = # of times to run the sorting algorithm
+;nthreads = # of threads in the thread pool
+;OUTPUT
+;time it takes to sort the list with the given partitions, and size of the thread pool
 (defn concurrent-sort [fname nitems niters nthreads]
   (let [unsorted (read-dataset fname nitems)]
     (println (count unsorted) "partitions with" nitems "elements in each partition with a thread pool of" nthreads "threads")
@@ -122,7 +139,11 @@
 
 ;(println (cp/ncpus) "CPUS")
 
+
+
 (let [fname "../../resources/numbers.dat"]
+  ;(let [unsorted (read-dataset fname 1000000)]
+  ;  (time (sort unsorted)))
   ;(serial-sort fname 1000000 1)                             ;1 Partition
   ;(serial-sort fname 500000 1)                              ;2 Partitions
   ;(serial-sort fname 250000 1)                              ;4 Partitions
@@ -143,7 +164,7 @@
   ;(concurrent-sort fname 31250 1 2)                       ;2 Threads, 32 Partitions
   ;(concurrent-sort fname 1000000 1 4)                       ;4 Threads, 1 Partitions
   ;(concurrent-sort fname 500000 1 4)                        ;4 Threads, 2 Partitions
-  (concurrent-sort fname 250000 1 4)                       ;4 Threads, 4 Partitions
+  ;(concurrent-sort fname 250000 1 4)                       ;4 Threads, 4 Partitions
   ;(concurrent-sort fname 125000 1 4)                       ;4 Threads, 8 Partitions
   ;(concurrent-sort fname 62500 1 4)                       ;4 Threads, 16 Partitions
   ;(concurrent-sort fname 31250 1 4)                       ;4 Threads, 32 Partitions
@@ -165,6 +186,13 @@
   ;(concurrent-sort fname 125000 1 32)                       ;32 Threads, 8 Partitions
   ;(concurrent-sort fname 62500 1 32)                       ;32 Threads, 16 Partitions
   ;(concurrent-sort fname 31250 1 32)                       ;32 Threads, 32 Partitions
+
+  ;(pmap-sort fname 1000000 1)
+  ;(pmap-sort fname 500000 1)
+  ;(pmap-sort fname 250000 1)
+  ;(pmap-sort fname 125000 1)
+  ;(pmap-sort fname 62500 1)
+  (pmap-sort fname 31250 1)
 
   )
 
