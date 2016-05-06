@@ -82,49 +82,51 @@
 
 ;(println (cp/ncpus) "CPUS")
 
+
+
 (let [fname "../../resources/numbers.dat"]
-  ;(serial-sort fname 1000000)                               ;1 Partition
-  ;(serial-sort fname 500000)                                ;2 Partitions
-  ;(serial-sort fname 250000)                                ;4 Partitions
-  ;(serial-sort fname 125000)                                ;8 Partitions
-  ;(serial-sort fname 62500)                                 ;16 Partitions
-  ;(serial-sort fname 31250)                                 ;32 Partitions
-  ;(concurrent-sort fname 1000000 1)                         ;1 Thread, 1 Partition
-  ;(concurrent-sort fname 500000 1)                          ;1 Thread, 2 Partitions
-  ;(concurrent-sort fname 250000 1)                          ;1 Thread, 4 Partitions
-  ;(concurrent-sort fname 125000 1)                          ;1 Thread, 8 Partitions
-  ;(concurrent-sort fname 62500 1)                           ;1 Thread, 16 Partitions
-  ;(concurrent-sort fname 31250 1)                           ;1 Thread, 32 Partitions
-  ;(concurrent-sort fname 1000000 2)                         ;2 Threads, 1 Partition
-  ;(concurrent-sort fname 500000 2)                          ;2 Threads, 2 Partitions
-  ;(concurrent-sort fname 250000 2)                          ;2 Threads, 4 Partitions
-  ;(concurrent-sort fname 125000 2)                          ;2 Threads, 8 Partitions
-  ;(concurrent-sort fname 62500 2)                           ;2 Threads, 16 Partitions
-  ;(concurrent-sort fname 31250 2)                           ;2 Threads, 32 Partitions
-  ;(concurrent-sort fname 1000000 4)                         ;4 Threads, 1 Partitions
-  ;(concurrent-sort fname 500000 4)                          ;4 Threads, 2 Partitions
-  ;(concurrent-sort fname 250000 4)                          ;4 Threads, 4 Partitions
-  ;(concurrent-sort fname 125000 4)                          ;4 Threads, 8 Partitions
-  ;(concurrent-sort fname 62500 4)                           ;4 Threads, 16 Partitions
-  ;(concurrent-sort fname 31250 4)                           ;4 Threads, 32 Partitions
-  ;(concurrent-sort fname 1000000 8)                         ;8 Threads, 1 Partitions
-  ;(concurrent-sort fname 500000 8)                          ;8 Threads, 2 Partitions
-  ;(concurrent-sort fname 250000 8)                          ;8 Threads, 4 Partitions
-  ;(concurrent-sort fname 125000 8)                          ;8 Threads, 8 Partitions
-  ;(concurrent-sort fname 62500 8)                           ;8 Threads, 16 Partitions
-  ;(concurrent-sort fname 31250 8)                           ;8 Threads, 32 Partitions
-  ;(concurrent-sort fname 1000000 16)                        ;16 Threads, 1 Partitions
-  ;(concurrent-sort fname 500000 16)                         ;16 Threads, 2 Partitions
-  ;(concurrent-sort fname 250000 16)                         ;16 Threads, 4 Partitions
-  ;(concurrent-sort fname 125000 16)                         ;16 Threads, 8 Partitions
-  ;(concurrent-sort fname 62500 16)                          ;16 Threads, 16 Partitions
-  ;(concurrent-sort fname 31250 16)                          ;16 Threads, 32 Partitions
-  ;(concurrent-sort fname 1000000 32)                        ;32 Threads, 1 Partitions
-  ;(concurrent-sort fname 500000 32)                         ;32 Threads, 2 Partitions
-  ;(concurrent-sort fname 250000 32)                         ;32 Threads, 4 Partitions
-  ;(concurrent-sort fname 125000 32)                         ;32 Threads, 8 Partitions
-  ;(concurrent-sort fname 62500 32)                          ;32 Threads, 16 Partitions
-  ;(concurrent-sort fname 31250 32)                          ;32 Threads, 32 Partitions
+  (serial-sort fname 1000000)                               ;1 Partition
+  (serial-sort fname 500000)                                ;2 Partitions
+  (serial-sort fname 250000)                                ;4 Partitions
+  (serial-sort fname 125000)                                ;8 Partitions
+  (serial-sort fname 62500)                                 ;16 Partitions
+  (serial-sort fname 31250)                                 ;32 Partitions
+  (concurrent-sort fname 1000000 1)                         ;1 Thread, 1 Partition
+  (concurrent-sort fname 500000 1)                          ;1 Thread, 2 Partitions
+  (concurrent-sort fname 250000 1)                          ;1 Thread, 4 Partitions
+  (concurrent-sort fname 125000 1)                          ;1 Thread, 8 Partitions
+  (concurrent-sort fname 62500 1)                           ;1 Thread, 16 Partitions
+  (concurrent-sort fname 31250 1)                           ;1 Thread, 32 Partitions
+  (concurrent-sort fname 1000000 2)                         ;2 Threads, 1 Partition
+  (concurrent-sort fname 500000 2)                          ;2 Threads, 2 Partitions
+  (concurrent-sort fname 250000 2)                          ;2 Threads, 4 Partitions
+  (concurrent-sort fname 125000 2)                          ;2 Threads, 8 Partitions
+  (concurrent-sort fname 62500 2)                           ;2 Threads, 16 Partitions
+  (concurrent-sort fname 31250 2)                           ;2 Threads, 32 Partitions
+  (concurrent-sort fname 1000000 4)                         ;4 Threads, 1 Partitions
+  (concurrent-sort fname 500000 4)                          ;4 Threads, 2 Partitions
+  (concurrent-sort fname 250000 4)                          ;4 Threads, 4 Partitions
+  (concurrent-sort fname 125000 4)                          ;4 Threads, 8 Partitions
+  (concurrent-sort fname 62500 4)                           ;4 Threads, 16 Partitions
+  (concurrent-sort fname 31250 4)                           ;4 Threads, 32 Partitions
+  (concurrent-sort fname 1000000 8)                         ;8 Threads, 1 Partitions
+  (concurrent-sort fname 500000 8)                          ;8 Threads, 2 Partitions
+  (concurrent-sort fname 250000 8)                          ;8 Threads, 4 Partitions
+  (concurrent-sort fname 125000 8)                          ;8 Threads, 8 Partitions
+  (concurrent-sort fname 62500 8)                           ;8 Threads, 16 Partitions
+  (concurrent-sort fname 31250 8)                           ;8 Threads, 32 Partitions
+  (concurrent-sort fname 1000000 16)                        ;16 Threads, 1 Partitions
+  (concurrent-sort fname 500000 16)                         ;16 Threads, 2 Partitions
+  (concurrent-sort fname 250000 16)                         ;16 Threads, 4 Partitions
+  (concurrent-sort fname 125000 16)                         ;16 Threads, 8 Partitions
+  (concurrent-sort fname 62500 16)                          ;16 Threads, 16 Partitions
+  (concurrent-sort fname 31250 16)                          ;16 Threads, 32 Partitions
+  (concurrent-sort fname 1000000 32)                        ;32 Threads, 1 Partitions
+  (concurrent-sort fname 500000 32)                         ;32 Threads, 2 Partitions
+  (concurrent-sort fname 250000 32)                         ;32 Threads, 4 Partitions
+  (concurrent-sort fname 125000 32)                         ;32 Threads, 8 Partitions
+  (concurrent-sort fname 62500 32)                          ;32 Threads, 16 Partitions
+  (concurrent-sort fname 31250 32)                          ;32 Threads, 32 Partitions
 
   )
 
