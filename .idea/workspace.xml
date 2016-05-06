@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="06b61b10-0ccd-4786-a02c-b417af6f4c5a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/concurrent_quicksort/core.clj" afterPath="$PROJECT_DIR$/src/concurrent_quicksort/core.clj" />
-    </list>
+    <list default="true" id="06b61b10-0ccd-4786-a02c-b417af6f4c5a" name="Default" comment="" />
     <ignored path="concurrent-quicksort.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/out/" />
@@ -491,12 +488,12 @@
       <workItem from="1462294477452" duration="5289000" />
       <workItem from="1462304188832" duration="65000" />
       <workItem from="1462304306074" duration="15000" />
-      <workItem from="1462572310218" duration="45000" />
+      <workItem from="1462572310218" duration="144000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7714000" />
+    <option name="totallyTimeSpent" value="7813000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="1942" height="1042" extended-state="6" />
