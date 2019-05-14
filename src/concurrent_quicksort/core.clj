@@ -1,9 +1,5 @@
 (ns concurrent-quicksort.core)
-;I was influenced by the following solution on stack overflow
-;;;http://stackoverflow.com/questions/36731188/multithreaded-merge-sort-algorithm-in-clojure
 
-;;;Lazy QuickSort implementation in Clojure, from Joy of Clojure chapter 6.
-;;;https://gist.github.com/noahlz/1592879
 (defn sort-parts [work]
   (lazy-seq
     (loop [[part & parts] work]                             ;; Pull apart work - note: work will be a list of lists.
@@ -48,7 +44,7 @@
 
 
 
-;;;https://github.com/TheClimateCorporation/claypoole
+
 (require '[com.climate.claypoole :as cp])
 
 
